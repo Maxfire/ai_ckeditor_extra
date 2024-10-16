@@ -10,7 +10,7 @@ use Drupal\ai_ckeditor\Attribute\AiCKEditor;
 use Drupal\ai_ckeditor\Command\AiRequestCommand;
 
 /**
- * Plugin to do AI completion.
+ * Plugin to do AI Flesch-Kincaid score.
  */
 #[AiCKEditor(
   id: 'ai_ckeditor_flesch',
@@ -95,6 +95,7 @@ final class Flesch extends AiCKEditorPluginBase {
     ];
 
     $form['actions']['generate']['#value'] = $this->t('Get score');
+    unset($form['actions']['submit']);
 
     return $form;
   }
