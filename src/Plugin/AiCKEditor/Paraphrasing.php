@@ -10,14 +10,14 @@ use Drupal\ai_ckeditor\Attribute\AiCKEditor;
 use Drupal\ai_ckeditor\Command\AiRequestCommand;
 
 /**
- * Plugin to do AI Flesch-Kincaid score.
+ * Plugin to do AI Paraphrasing.
  */
 #[AiCKEditor(
-  id: 'ai_ckeditor_flesch',
-  label: new TranslatableMarkup('Flesch-Kincaid'),
-  description: new TranslatableMarkup('Use readability formula to assesses the approximate reading grade level of your text'),
+  id: 'ai_ckeditor_paraphrasing',
+  label: new TranslatableMarkup('Paraphrasing'),
+  description: new TranslatableMarkup('Rephrasing text to improve readability or avoid plagiarism'),
 )]
-final class Flesch extends AiCKEditorPluginBase {
+final class Paraphrasing extends AiCKEditorPluginBase {
 
   /**
    * {@inheritdoc}
@@ -70,27 +70,41 @@ final class Flesch extends AiCKEditorPluginBase {
 
     if (empty($storage['selected_text'])) {
       return [
-        '#markup' => '<p>' . $this->t('You must select some text before you can score it.') . '</p>',
+        '#markup' => '<p>' . $this->t('You must select some text before you can summarize it.') . '</p>',
       ];
     }
 
     $form = parent::buildCkEditorModalForm($form, $form_state);
 
+    $form['prompt_text'] = [
+      '#type' => 'textarea',
+      '#rows' => 2,
+      '#title' => $this->t('Ask to rephrase your text'),
+      '#attributes' => array(
+        'placeholder' => t('Paraphrase the following text for academic paper'),
+      ),
+      '#description' => $this->t('Examples:<br/>  Paraphrase the following sentence for use in an academic paper.<br/> Transform this narrative sentence into a more descriptive and vivid statement.'),
+    ];
+
     $form['selected_text'] = [
       '#type' => 'textarea',
-      '#title' => $this->t('Selected text to score'),
+      '#title' => $this->t('Selected text to rephrase'),
       '#disabled' => TRUE,
       '#default_value' => $storage['selected_text'],
     ];
+
     $form['response_text'] = [
-      '#type' => 'markup',
-      '#markup' => '',
+      '#type' => 'text_format',
+      '#title' => $this->t('The rephrase'),
+      '#description' => $this->t('The response from AI will appear in the box above. You can edit and tweak the response before saving it back to the main editor.'),
       '#prefix' => '<div id="ai-ckeditor-response">',
       '#suffix' => '</div>',
+      '#default_value' => '',
+      '#allowed_formats' => [$editor_id],
+      '#format' => $editor_id,
     ];
 
-    $form['actions']['generate']['#value'] = $this->t('Get score');
-    unset($form['actions']['submit']);
+    $form['actions']['generate']['#value'] = $this->t('Rephrase');
 
     return $form;
   }
@@ -109,8 +123,12 @@ final class Flesch extends AiCKEditorPluginBase {
   public function ajaxGenerate(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
 
+    if (!isset($values['prompt_text'])) {
+      $values['prompt_text'] = 'Paraphrase the following text ';
+    }
+
     try {
-      $prompt = 'Score the following text using Flesch-Kincaid :\r\n"' . $values["plugin_config"]["selected_text"];
+      $prompt = $values['prompt_text'] . ' :\r\n"' . $values["plugin_config"]["selected_text"];
       $response = new AjaxResponse();
       $values = $form_state->getValues();
       $response->addCommand(new AiRequestCommand($prompt, $values["editor_id"], $this->pluginDefinition['id'], 'ai-ckeditor-response'));
