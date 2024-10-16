@@ -1,0 +1,8 @@
+name: AI CKEditor extra integration
+type: module
+description: Add more functionalities to ai ckeditor module.
+package: AI
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:ckeditor5
+  - ai:ai
