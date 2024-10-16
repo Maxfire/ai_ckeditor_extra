@@ -82,11 +82,15 @@ final class Flesch extends AiCKEditorPluginBase {
       '#disabled' => TRUE,
       '#default_value' => $storage['selected_text'],
     ];
+
     $form['response_text'] = [
-      '#type' => 'markup',
-      '#markup' => '',
+      '#type' => 'text_format',
+      '#title' => $this->t('The score'),
+      '#description' => $this->t('The response from AI will appear in the box above. You can edit and tweak the response before saving it back to the main editor.'),
       '#prefix' => '<div id="ai-ckeditor-response">',
       '#suffix' => '</div>',
+      '#allowed_formats' => [$editor_id],
+      '#format' => $editor_id,
     ];
 
     $form['actions']['generate']['#value'] = $this->t('Get score');
