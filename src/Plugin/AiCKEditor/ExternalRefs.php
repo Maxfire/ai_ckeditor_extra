@@ -115,8 +115,7 @@ final class ExternalRefs extends AiCKEditorPluginBase {
     $values = $form_state->getValues();
 
     try {
-//      $prompt = 'Do not modify the provided text but only add the links. Append the external references and links found and show them at the bottom under the text "References" for the following text :\r\n"' . $values["plugin_config"]["selected_text"];
-      $prompt = 'Find this provided text and give me the external resources :\r\n"' . $values["plugin_config"]["selected_text"];
+      $prompt = 'Do not modify the provided text but only add the links. Append the external references and links found and show them at the bottom under the text "References" for the following text :\r\n"' . $values["plugin_config"]["selected_text"];
       $response = new AjaxResponse();
       $values = $form_state->getValues();
       $response->addCommand(new AiRequestCommand($prompt, $values["editor_id"], $this->pluginDefinition['id'], 'ai-ckeditor-response'));
